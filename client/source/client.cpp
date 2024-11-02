@@ -168,7 +168,7 @@ void login_to_server(HWND hwnd)
     }
 
     std::thread([&]()
-                {while(running){
+                { while(running){
                     using namespace std::chrono;
                     std::string route = id_player == 1 ? "/update_1" : "/update_2";
                     std::string body = std::to_string((id_player == 1 ? progress_1 : progress_2).load());
