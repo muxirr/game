@@ -24,7 +24,7 @@ inline void putimage_ex(const Camera &camera, IMAGE *img, const Rect *rect_dst, 
     AlphaBlend(GetImageHDC(GetWorkingImage()), (int)(rect_dst->x - camera_position.x), (int)(rect_dst->y - camera_position.y), rect_dst->w, rect_dst->h, GetImageHDC(img), rect_src ? rect_src->x : 0, rect_src ? rect_src->y : 0, rect_src ? rect_src->w : img->getwidth(), rect_src ? rect_src->h : img->getheight(), blend_func);
 }
 
-inline void load_audio(LPCTSTR path, LPCSTR id)
+inline void load_audio(LPCTSTR path, LPCTSTR id)
 {
     static TCHAR str_cmd[512];
     wsprintf(str_cmd, L"open %s alias %s", path, id);
