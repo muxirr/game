@@ -135,7 +135,7 @@ void load_resources(HWND hwnd)
     file.close();
 }
 
-//login to server
+// login to server
 void login_to_server(HWND hwnd)
 {
     client = new httplib::Client(str_address);
@@ -143,14 +143,15 @@ void login_to_server(HWND hwnd)
     httplib::Result res = client->Post("/login");
     if (!res || res->status != 200)
     {
-        MessageBox(nullptr, L"Failed to login to server!", L"Error", MB_OK | MB_ICONERROR);
+        MessageBox(hwnd, L"Failed to login to server!", L"Error", MB_OK | MB_ICONERROR);
         exit(-1);
     }
+
     id_player = std::stoi(res->body);
 
     if (id_player <= 0)
     {
-        MessageBox(nullptr, L"Server is Full!", L"Reject", MB_OK | MB_ICONERROR);
+        MessageBox(hwnd, L"Server is Full!", L"Reject", MB_OK | MB_ICONERROR);
         exit(-1);
     }
 
@@ -167,12 +168,11 @@ void login_to_server(HWND hwnd)
     }
 
     std::thread([&]()
-                { while(running){
+                {while(running){
                     using namespace std::chrono;
                     std::string route = id_player == 1 ? "/update_1" : "/update_2";
                     std::string body = std::to_string((id_player == 1 ? progress_1 : progress_2).load());
                     httplib::Result res = client->Post(route, body, "text/plain");
-
                     if(res && res->status == 200){
                         int progress = std::stoi(res->body);
                         (id_player == 1 ? progress_2 : progress_1).store(progress);
@@ -182,10 +182,18 @@ void login_to_server(HWND hwnd)
         .detach();
 }
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
-//int main()
+// logout from server
+void logout_from_server()
 {
-    //FreeConsole();
+    running.store(false);
+    std::this_thread::sleep_for(std::chrono::milliseconds(101));
+    client->Post("/logout", (id_player == 1) ? "1" : "2", "text/plain");
+}
+
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
+// int main()
+{
+    // FreeConsole();
     ////////////处理游戏初始化///////////
     using namespace std::chrono;
 
@@ -243,15 +251,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     BeginBatchDraw();
     while (true)
     {
-        // client->Post("/live", (id_player == 1) ? "1" : "2", "text/plain");
         ////////////处理玩家输入///////////
         while (peekmessage(&msg))
         {
             // std::cout << msg.message << " " << isClose(hwnd) << std::endl;
             if (msg.message == WM_KEYUP && msg.vkcode == VK_ESCAPE)
             {
-                client->Post("/logout", (id_player == 1) ? "1" : "2", "text/plain");
-                running.store(false);
+                logout_from_server();
                 exit(0);
             }
             if (stage != Stage::Racing)
@@ -312,14 +318,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                 stop_audio(L"bgm");
                 play_audio(id_player == 1 ? L"1p_win" : L"2p_win");
                 MessageBox(hwnd, L"You Win!", L"Game Over", MB_OK | MB_ICONINFORMATION);
-                client->Post("/logout", (id_player == 1) ? "1" : "2", "text/plain");
+                logout_from_server();
                 exit(0);
             }
             else if ((id_player == 1 && progress_2 >= num_total_char) || (id_player == 2 && progress_1 >= num_total_char))
             {
                 stop_audio(L"bgm");
                 MessageBox(hwnd, L"You Lost!", L"Game Over", MB_OK | MB_ICONINFORMATION);
-                client->Post("/logout", (id_player == 1) ? "1" : "2", "text/plain");
+                logout_from_server();
                 exit(0);
             }
 
@@ -419,6 +425,5 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         }
     }
     EndBatchDraw();
-    client->Post("/logout", (id_player == 1) ? "1" : "2", "text/plain");
     return 0;
 }
