@@ -12,7 +12,8 @@
 ---
 
 ## 注意事项
-_只能在windows平台下运行_
+
+_只能在 windows 平台下运行_
 
 [easyx 下载链接](https://easyx.cn/)
 [参考视频链接](https://www.bilibili.com/video/BV1yjsoeREdZ)
