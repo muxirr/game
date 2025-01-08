@@ -6,11 +6,12 @@ project(client)
 file(GLOB CLIENT_SRC "./source/*.cpp" "./source/*.c")
 
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS")
+set(VS_DIR "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/VS")
 
 add_definitions(-D_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING)
 
-include_directories(include ../include "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/VS/include")
+include_directories(include ../include ${VS_DIR}/include)
 
 add_executable(${PROJECT_NAME} WIN32 ${CLIENT_SRC})
 
-target_link_libraries(${PROJECT_NAME} PUBLIC "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/VS/lib/x64/EasyXw.lib" "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/VS/lib/x64/EasyXa.lib")
+target_link_libraries(${PROJECT_NAME} PUBLIC ${VS_DIR}/lib/x64/EasyXw.lib)
