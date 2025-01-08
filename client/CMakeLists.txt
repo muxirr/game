@@ -5,7 +5,6 @@ project(client)
 #aux_source_directory(./source CLIENT_SRC)
 file(GLOB CLIENT_SRC "./source/*.cpp" "./source/*.c")
 
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS")
 set(VS_DIR "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/VS")
 
 add_definitions(-D_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING)
